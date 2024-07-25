@@ -47,6 +47,7 @@ https://disk.yandex.ru/i/example1 Квадратик
 https://disk.yandex.ru/i/example2,Шарик
 https://disk.yandex.ru/i/example3;треугольник
 https://disk.yandex.ru/d/example4
+https://disk.yandex.ru/d/example_folder/file.jpg Ромбик
 ```
 
 ### Аргументы командной строки
