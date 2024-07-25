@@ -1,32 +1,62 @@
+Этот скрипт позволяет загружать файлы с Яндекс.Диска по публичным ссылкам. Скрипт может работать как с одной ссылкой, так и с текстовым файлом, содержащим список ссылок.
 
-# Yandex Disk Downloader Tool
+## Требования
 
-The Yandex Disk Downloader Tool is a simple Python script that allows users to download files from Yandex Disk easily. With this tool, users can download both small and large files from Yandex Disk with ease. The tool takes in a Yandex Disk file link and a download location, and then downloads the specified file to the designated location.
+- Python 3.x
+- Библиотеки: `requests`
 
+## Установка
 
+1. Склонируйте репозиторий или скачайте скрипт.
+2. Установите необходимые библиотеки:
+    ```bash
+    pip install requests
+    ```
 
+## Использование
 
+### Загрузка одного файла
 
-## Installation
-
-Installation Requirement 
+Для загрузки одного файла с Яндекс.Диска используйте следующую команду:
 
 ```bash
-  pip install requests
-```
-    
-## Usage/Examples
-
-To use the tool, follow these steps:
-
-1. Run the following command in your terminal:
-
-```
-python3 YandexCLI.py -l <yandex_link> -d <download_location>
-
+python script.py -l <ссылка> -d <путь_для_сохранения>
 ```
 
-2. Replace <yandex_link> with the link to the file you want to download from Yandex Disk, and <download_location> with the directory where you want to save the downloaded file.
+### Загрузка из файла
 
+Для загрузки файлов из списка, содержащегося в текстовом файле, используйте следующую команду:
 
-3. Press Enter and wait for the download to complete.
+```bash
+python yandown.py -f <путь_к_файлу> -d <путь_для_сохранения>
+```
+
+Формат текстового файла должен быть следующим: одна ссылка на строку.
+
+### Аргументы командной строки
+
+- `-l, --link`: Ссылка на файл Яндекс.Диска (необязательно, если используется файл).
+- `-f, --file`: Путь к текстовому файлу с ссылками на файлы Яндекс.Диска (необязательно, если используется одиночная ссылка).
+- `-d, --download_location`: Путь для сохранения загруженных файлов (обязателен).
+
+## Примеры
+
+### Загрузка одного файла
+
+```bash
+python yandown.py -l "https://yadi.sk/d/somefile" -d "/path/to/save"
+```
+
+### Загрузка из файла
+
+```bash
+python yandown.py -f "/path/to/links.txt" -d "/path/to/save"
+```
+
+Содержимое файла `links.txt`:
+```
+https://yadi.sk/d/somefile1
+https://yadi.sk/d/somefile2
+https://yadi.sk/d/somefile3
+```
+
