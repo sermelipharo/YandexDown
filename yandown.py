@@ -12,9 +12,43 @@ class YandexDiskDownloader:
         self.custom_name = custom_name
 
     def download(self):
+        def get_file_name_from_link(link):
+            return link.split('/')[-1]
+
+        original_file_name = get_file_name_from_link(self.link)
+
         url = f"https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={self.link}"
         response = requests.get(url)
-        download_url = response.json()["href"]
+
+        if response.status_code == 404:
+            print(f"Error: Unable to fetch download URL for {self.link}. Status code: 404. Trying another method.")
+            higher_level_link = '/'.join(self.link.split('/')[:-1])
+            url = f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={higher_level_link}"
+            response = requests.get(url)
+            if response.status_code == 200:
+                response_json = response.json()
+                items = response_json.get('_embedded', {}).get('items', [])
+                if items:
+                    for item in items:
+                        if item['type'] == 'file' and item['name'] == original_file_name:
+                            download_url = item['file']
+                            break
+                    else:
+                        print(f"Error: No downloadable file found with the name {original_file_name} in the provided link: {self.link}")
+                        return
+                else:
+                    print(f"Error: No items found in the provided link: {higher_level_link}")
+                    return
+            else:
+                print(f"Error: Unable to fetch resource details for {higher_level_link}. Status code: {response.status_code}")
+                return
+        else:
+            response_json = response.json()
+            download_url = response_json.get("href")
+            if not download_url:
+                print(f"Error: Download URL not found in the response for {self.link}")
+                return
+
         original_file_name = urllib.parse.unquote(download_url.split("filename=")[1].split("&")[0])
         file_extension = os.path.splitext(original_file_name)[1]
         file_name = self.custom_name + file_extension if self.custom_name else original_file_name
@@ -36,7 +70,7 @@ class YandexDiskDownloader:
 def download_from_file(file_path, download_location):
     with open(file_path, 'r') as file:
         lines = file.readlines()
-        
+
     for line in lines:
         line = line.strip()
         if line:
