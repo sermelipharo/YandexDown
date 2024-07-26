@@ -4,7 +4,6 @@ import urllib.parse
 import os
 import sys
 
-
 class YandexDiskDownloader:
     def __init__(self, link, download_location, custom_name=None):
         self.link = link
@@ -23,24 +22,34 @@ class YandexDiskDownloader:
         if response.status_code == 404:
             print(f"Error: Unable to fetch download URL for {self.link}. Status code: 404. Trying another method.")
             higher_level_link = '/'.join(self.link.split('/')[:-1])
-            url = f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={higher_level_link}"
-            response = requests.get(url)
-            if response.status_code == 200:
-                response_json = response.json()
-                items = response_json.get('_embedded', {}).get('items', [])
-                if items:
+            offset = 0
+            limit = 100
+            download_url = None
+
+            while True:
+                url = f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={higher_level_link}&limit={limit}&offset={offset}"
+                response = requests.get(url)
+                if response.status_code == 200:
+                    response_json = response.json()
+                    items = response_json.get('_embedded', {}).get('items', [])
+                    if not items:
+                        break
+
                     for item in items:
                         if item['type'] == 'file' and item['name'] == original_file_name:
                             download_url = item['file']
                             break
-                    else:
-                        print(f"Error: No downloadable file found with the name {original_file_name} in the provided link: {self.link}")
-                        return
+
+                    if download_url:
+                        break
+
+                    offset += limit
                 else:
-                    print(f"Error: No items found in the provided link: {higher_level_link}")
+                    print(f"Error: Unable to fetch resource details for {higher_level_link}. Status code: {response.status_code}")
                     return
-            else:
-                print(f"Error: Unable to fetch resource details for {higher_level_link}. Status code: {response.status_code}")
+
+            if not download_url:
+                print(f"Error: No downloadable file found with the name {original_file_name} in the provided link: {self.link}")
                 return
         else:
             response_json = response.json()
@@ -66,7 +75,6 @@ class YandexDiskDownloader:
 
         print(f"Download complete: {file_name}")
 
-
 def download_from_file(file_path, download_location):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -87,7 +95,6 @@ def download_from_file(file_path, download_location):
             downloader = YandexDiskDownloader(link, download_location, custom_name)
             downloader.download()
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Yandex Disk Downloader')
     parser.add_argument('-l', '--link', type=str, help='Link for Yandex Disk URL')
@@ -97,10 +104,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.file:
-        if not args.download_location:
-            print("Error: You must provide a download location when using a file.")
-        else:
-            download_from_file(args.file, args.download_location)
+        download_location = args.download_location if args.download_location else os.getcwd()
+        download_from_file(args.file, download_location)
     elif args.link:
         download_location = args.download_location if args.download_location else os.getcwd()
         downloader = YandexDiskDownloader(args.link, download_location)
