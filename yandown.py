@@ -177,6 +177,7 @@ def download_from_file(file_path, download_location):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Yandex Disk Downloader')
+    parser.add_argument('link', nargs='?', type=str, help='Link for Yandex Disk URL (default)')
     parser.add_argument('-l', '--link', type=str, help='Link for Yandex Disk URL')
     parser.add_argument('-d', '--download_location', type=str, help='Download location on your PC')
     parser.add_argument('-f', '--file', type=str, help='Path to file with Yandex Disk URLs')
@@ -186,13 +187,14 @@ if __name__ == "__main__":
     if args.file:
         download_location = args.download_location if args.download_location else os.getcwd()
         download_from_file(args.file, download_location)
-    elif args.link:
+    elif args.link or args.link is None:
+        link = args.link if args.link else args.link
         download_location = args.download_location if args.download_location else os.getcwd()
-        downloader = YandexDiskDownloader(args.link, download_location)
+        downloader = YandexDiskDownloader(link, download_location)
         downloader.download()
     elif len(sys.argv) == 2:
-        download_location = os.getcwd()
         link = sys.argv[1]
+        download_location = os.getcwd()
         downloader = YandexDiskDownloader(link, download_location)
         downloader.download()
     else:
