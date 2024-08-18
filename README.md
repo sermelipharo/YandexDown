@@ -9,14 +9,14 @@ This script allows downloading files from Yandex Disk using public links. The sc
 ### Requirements
 
 - Python 3.x
-- Libraries: `requests`
+- Libraries: `requests tqdm`
 
 ### Installation
 
 1. Clone the repository or download the script.
 2. Install the required libraries:
     ```bash
-    pip install requests
+    pip install requests tqdm
     ```
 
 ### Usage
@@ -89,14 +89,14 @@ python yandown.py "https://disk.yandex.ru/i/example1"
 ### Требования
 
 - Python 3.x
-- Библиотеки: `requests`
+- Библиотеки: `requests tqdm`
 
 ### Установка
 
 1. Склонируйте репозиторий или скачайте скрипт.
 2. Установите необходимые библиотеки:
     ```bash
-    pip install requests
+    pip install requests tqdm
     ```
 
 ### Использование
